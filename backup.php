@@ -20,7 +20,6 @@ if ($cmdLine->wantsHelp) {
 
 try {
 	$config = Yaml::parse($cmdLine->yamlConfigFile);
-	var_dump($config);
 } catch (ParseException $e) {
 	echo "Error parsing configuration file: ".$e->getMessage()."\n";
 	exit(1);
