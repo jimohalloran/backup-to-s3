@@ -18,8 +18,6 @@ if ($cmdLine->wantsHelp) {
 	exit;
 }
 
-//echo "Using {$cmdLine->yamlConfigFile}...\n";
-
 try {
 	$config = Yaml::parse($cmdLine->yamlConfigFile);
 	var_dump($config);
@@ -28,3 +26,10 @@ try {
 	exit(1);
 }
 
+try {
+	$backup = new \Jimohalloran\Backup($config);
+	$backup->execute();
+} catch (\Jimohalloran\BackupException $e) {
+	echo "Error performing backup: ".$e->getMessage()."\n";
+	exit(1);
+}
