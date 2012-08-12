@@ -1,0 +1,33 @@
+{
+    "hash": "497e218a7cee3150bc1f3a31ec4de0f9",
+    "packages": [
+        {
+            "package": "amazonwebservices/aws-sdk-for-php",
+            "version": "1.5.11"
+        },
+        {
+            "package": "symfony/options-resolver",
+            "version": "dev-master",
+            "alias-pretty-version": "2.1.x-dev",
+            "alias-version": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "symfony/options-resolver",
+            "version": "dev-master",
+            "source-reference": "6a1159eb868b3af059d0a8c578db1f7efab89850",
+            "commit-date": "1344014278"
+        },
+        {
+            "package": "symfony/yaml",
+            "version": "v2.0.16"
+        }
+    ],
+    "packages-dev": null,
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": [
+
+    ]
+}
