@@ -1,9 +1,13 @@
 {
-    "hash": "3b79d5432bfbb82d3e8ba098c3135872",
+    "hash": "280d24ad5fbacb66a509653f77459a8b",
     "packages": [
         {
             "package": "amazonwebservices/aws-sdk-for-php",
             "version": "1.5.11"
+        },
+        {
+            "package": "symfony/process",
+            "version": "v2.0.16"
         },
         {
             "package": "symfony/yaml",
