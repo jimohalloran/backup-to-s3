@@ -1,0 +1,14 @@
+{
+    "name": "jimohalloran/backup-to-s3",
+    "description": "PHP Script to back assets and a mysqldatabase to Amazon's S3",
+    "require": {
+        "symfony/yaml": "v2.0.16",
+        "amazonwebservices/aws-sdk-for-php": "1.5.10"
+    },
+    "authors": [
+        {
+            "name": "Jim O'Halloran",
+            "email": "jim@jimohalloran.com"
+        }
+    ]
+}
