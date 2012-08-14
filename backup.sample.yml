@@ -1,0 +1,17 @@
+name: myproj  # Used to name the tarball we upload to S3
+amazon:
+  bucket: my_bucket_name   # Must be created manually
+  secret_access_key: 'secret key here'
+  access_key_id: access_key_here
+database:  # Backup a database with mysqldump
+  -        # Repeat this block if you need to back up multiple databases.
+    name: main   # Used to identify the database when creating filenames,
+    username: mysql_username
+    password: 'mysql_password'
+    hostname: localhost
+    database: name_of_database
+    touch: /wwwroot/myproj/maintenance.flag  # (optional) Create a file while the database backup is performed and delete it afterwards.  Can be used to put magento into maintenance mode.
+files: # Backup a foilder including all files and subfolders.
+  -    # Repeat this block if you want to back up multiple filder.
+    name: assets      # Used to identify this path when creating backjup folder,
+    path: /wwwroot/myproj/media
