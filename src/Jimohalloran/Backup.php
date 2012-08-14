@@ -69,11 +69,22 @@ class Backup {
 		$cmd .= array_key_exists('password', $conn) ? ' -p' .$conn['password'] : '';
 		$cmd .= ' ' . $this->_elem($conn, 'database', '') . ' > ' . $this->_tmpDbPath . '/' . $name . '.sql';
 
+		// Create a flag file during database backup.  e.g. Create a maintenance.
+		// flag file to put Magento into maintenance mode.
+		if (array_key_exists('touch', $conn)) {
+			touch($conn['touch']);
+		}
+		
 		$process = new Process($cmd);
 		$process->setTimeout(3600);
 		$process->run();
+		
+		if (array_key_exists('touch', $conn) && file_exists($conn['touch'])) {
+			unlink($conn['touch']);
+		}
+
 		if (!$process->isSuccessful()) {
-				throw new BackupException($process->getErrorOutput());
+			throw new BackupException($process->getErrorOutput());
 		}
 	}
 	
