@@ -45,7 +45,25 @@ class Backup {
 		}
 		
 		if (count($this->_config['files']) || count($this->_config['database'])) {
-			$tarFileName = $this->_createTarball($this->_config['name']);
+			$this->_createTarball($this->_config['name']);
+			$this->_uploadToAmazonS3($this->_config['amazon']);
+		}
+	}
+	
+	protected function _uploadToAmazonS3($awsConfig) {
+		$s3 = new \AmazonS3(array(
+				'key' => $awsConfig['access_key_id'],
+				'secret' => $awsConfig['secret_access_key'],
+			));
+	
+		$response = $s3->create_mpu_object($awsConfig['bucket'], basename($this->_tarball), array(
+				'fileUpload' => $this->_tarball,
+				'acl' => \AmazonS3::ACL_PRIVATE ,
+				'storage' => \AmazonS3::STORAGE_STANDARD,
+			));
+
+		if (!$response->isOK()) {
+			throw new BackupException("Error uploading {$this->_tarball} to S3,  Resp0onse from Amazon was: ".print_r($response, true));
 		}
 	}
 	
