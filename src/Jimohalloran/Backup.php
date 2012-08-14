@@ -14,9 +14,10 @@ class Backup {
 	
 	protected $_config;
 	
-	protected $_tmpPath;
+	protected $_tmpPath = false;
 	protected $_tmpDbPath;
 	protected $_tmpFilePath;
+	protected $_tarball = false;
 	
 	public function __construct($yamlConfig) {
 		$this->_config = $yamlConfig;
@@ -41,6 +42,21 @@ class Backup {
 			foreach ($this->_config['files'] as $name => $path) {
 				$this->_copyFiles($name, $path);
 			}
+		}
+		
+		if (count($this->_config['files']) || count($this->_config['database'])) {
+			$tarFileName = $this->_createTarball($this->_config['name']);
+		}
+	}
+	
+	protected function _createTarball($siteName) {
+		$this->_tarball = sys_get_temp_dir().'/'.$siteName.'-'.date('YmdHi').'.tar.gz';
+		$cmd = 'tar zcf '. $this->_tarball . ' ' .$this->_tmpPath.'/';
+		$process = new Process($cmd);
+		$process->setTimeout(3600);
+		$process->run();
+		if (!$process->isSuccessful()) {
+				throw new BackupException("Creating {$this->_tarball}: ".$process->getErrorOutput());
 		}
 	}
 	
@@ -110,8 +126,13 @@ class Backup {
 	}
 	
 	protected function _removeTmpFolder() {
-		//$this->_rrmdir($this->_tmpPath);
-		echo $this->_tmpPath."\n";
+		if ($this->_tmpPath !== false) {
+			$this->_rrmdir($this->_tmpPath);
+		}
+		
+		if ($this->_tarball !== false && file_exists($this->_tarball)) {
+			unlink($this->_tarball);
+		}
 	}
 	
 	protected function _rrmdir($dir) {
