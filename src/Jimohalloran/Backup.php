@@ -143,6 +143,17 @@ class Backup {
 				unlink($file);
 			}
 		}
+		// Deal specifically with hidden files.
+		foreach(glob($dir . '/.?*') as $file) {
+			if (strpos($file, '..') === false) {
+				if(is_dir($file)) {
+					$this->_rrmdir($file);
+				} else {
+					unlink($file);
+				}
+			}
+		}
+		
 		rmdir($dir);
 	}
 	
