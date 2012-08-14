@@ -32,15 +32,15 @@ class Backup {
 		
 		if (count($this->_config['database'])) {
 			$this->_tmpDbPath = $this->_createFolder(self::DATABASE_FOLDER);
-			foreach ($this->_config['database'] as $name => $connectionInfo) {
-				$this->_mysqlDump($name, $connectionInfo);
+			foreach ($this->_config['database'] as $connectionInfo) {
+				$this->_mysqlDump($connectionInfo);
 			}
 		}
 		
 		if (count($this->_config['files'])) {
 			$this->_tmpFilePath = $this->_createFolder(self::FILE_FOLDER);
-			foreach ($this->_config['files'] as $name => $path) {
-				$this->_copyFiles($name, $path);
+			foreach ($this->_config['files'] as $conf) {
+				$this->_copyFiles($conf);
 			}
 		}
 		
@@ -78,12 +78,12 @@ class Backup {
 		}
 	}
 	
-	protected function _copyFiles($name, $path) {
-		$destDir = $this->_tmpFilePath.'/'.$name.'/';
-		if (substr($path, -1) != '/') {
-			$path .= '/';
+	protected function _copyFiles($conf) {
+		$destDir = $this->_tmpFilePath.'/'.$conf['name'].'/';
+		if (substr($conf['path'], -1) != '/') {
+			$conf['path'] .= '/';
 		}
-		$cmd = 'cp -a '.$path.'* '.$destDir;
+		$cmd = 'cp -a '.$conf['path'].'* '.$destDir;
 		
 		mkdir($destDir, 0700);
 				
@@ -91,17 +91,16 @@ class Backup {
 		$process->setTimeout(3600);
 		$process->run();
 		if (!$process->isSuccessful()) {
-				throw new BackupException("Error copying $name: ".$process->getErrorOutput());
+				throw new BackupException("Error copying {$conf['name']}: ".$process->getErrorOutput());
 		}
-		
 	}
 	
-	protected function _mysqlDump($name, $conn) {
+	protected function _mysqlDump($conn) {
 		$cmd = 'mysqldump';
 		$cmd .= ' -h '.$this->_elem($conn, 'hostname', 'localhost');
 		$cmd .= ' -u '.$this->_elem($conn, 'username', 'root');
 		$cmd .= array_key_exists('password', $conn) ? ' -p' .$conn['password'] : '';
-		$cmd .= ' ' . $this->_elem($conn, 'database', '') . ' > ' . $this->_tmpDbPath . '/' . $name . '.sql';
+		$cmd .= ' ' . $this->_elem($conn, 'database', '') . ' > ' . $this->_tmpDbPath . '/' . $conn['name'] . '.sql';
 
 		// Create a flag file during database backup.  e.g. Create a maintenance.
 		// flag file to put Magento into maintenance mode.
