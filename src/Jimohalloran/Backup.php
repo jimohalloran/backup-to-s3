@@ -60,6 +60,8 @@ class Backup {
 				'fileUpload' => $this->_tarball,
 				'acl' => \AmazonS3::ACL_PRIVATE ,
 				'storage' => \AmazonS3::STORAGE_STANDARD,
+				'partSize' => 1 * 1024 * 1024 * 1024,  // 1Gb
+				'limit' => 1,
 			));
 
 		if (!$response->isOK()) {
