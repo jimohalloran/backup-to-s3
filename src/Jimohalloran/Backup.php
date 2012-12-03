@@ -56,14 +56,30 @@ class Backup {
 				'secret' => $awsConfig['secret_access_key'],
 			));
 	
-		$response = $s3->create_mpu_object($awsConfig['bucket'], basename($this->_tarball), array(
-				'fileUpload' => $this->_tarball,
-				'acl' => \AmazonS3::ACL_PRIVATE ,
-				'storage' => \AmazonS3::STORAGE_STANDARD,
-			));
-
+		$numErrors = 0;
+		$errMsg = '';
+		do {
+			try {
+				$response = $s3->create_mpu_object($awsConfig['bucket'], basename($this->_tarball), array(
+						'fileUpload' => $this->_tarball,
+						'acl' => \AmazonS3::ACL_PRIVATE ,
+						'storage' => \AmazonS3::STORAGE_STANDARD,
+						'partSize' => 1 * 1024 * 1024 * 1024,  // 1Gb
+						'limit' => 1,
+					));
+			} catch (cURL_Exception $e) {
+				$numErrors++;
+				$errMsg = $e->getMessage();
+				echo "$numErrors: $errMsg\n";
+			} catch (cURL_Multi_Exception $e) {
+				$numErrors++;
+				$errMsg = $e->getMessage();
+				echo "$numErrors: $errMsg\n";
+			}
+		} while ($numErrors < 3 && !$response->isOk());
+ 
 		if (!$response->isOK()) {
-			throw new BackupException("Error uploading {$this->_tarball} to S3,  Resp0onse from Amazon was: ".print_r($response, true));
+			throw new BackupException("Error uploading {$this->_tarball} to S3. Exception Message: '$errMsg' Response from Amazon was: ".print_r($response, true));
 		}
 	}
 	
