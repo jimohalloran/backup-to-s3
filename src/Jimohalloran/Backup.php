@@ -67,11 +67,11 @@ class Backup {
 						'partSize' => 1 * 1024 * 1024 * 1024,  // 1Gb
 						'limit' => 1,
 					));
-			} catch (cURL_Exception $e) {
+			} catch (\cURL_Exception $e) {
 				$numErrors++;
 				$errMsg = $e->getMessage();
 				echo "$numErrors: $errMsg\n";
-			} catch (cURL_Multi_Exception $e) {
+			} catch (\cURL_Multi_Exception $e) {
 				$numErrors++;
 				$errMsg = $e->getMessage();
 				echo "$numErrors: $errMsg\n";
