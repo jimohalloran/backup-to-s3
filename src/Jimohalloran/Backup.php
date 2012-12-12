@@ -90,7 +90,7 @@ class Backup {
 	
 	protected function _createTarball($siteName) {
 		$this->_tarball = sys_get_temp_dir().'/'.$siteName.'-'.date('YmdHi').'.tar.gz';
-		$cmd = 'tar zcf '. $this->_tarball . ' ' .$this->_tmpPath.'/';
+		$cmd = 'nice tar zcf '. $this->_tarball . ' ' .$this->_tmpPath.'/';
 		$process = new Process($cmd);
 		$process->setTimeout(3600);
 		$process->run();
@@ -104,7 +104,7 @@ class Backup {
 		if (substr($conf['path'], -1) != '/') {
 			$conf['path'] .= '/';
 		}
-		$cmd = 'cp -a '.$conf['path'].'* '.$destDir;
+		$cmd = 'nice cp -a '.$conf['path'].'* '.$destDir;
 		
 		mkdir($destDir, 0700);
 				
@@ -117,7 +117,7 @@ class Backup {
 	}
 	
 	protected function _mysqlDump($conn) {
-		$cmd = 'mysqldump';
+		$cmd = 'nice mysqldump';
 		$cmd .= ' -h '.$this->_elem($conn, 'hostname', 'localhost');
 		$cmd .= ' -u '.$this->_elem($conn, 'username', 'root');
 		$cmd .= array_key_exists('password', $conn) ? ' -p' .$conn['password'] : '';
