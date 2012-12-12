@@ -76,11 +76,16 @@ class Backup {
 				$errMsg = $e->getMessage();
 				echo "$numErrors: $errMsg\n";
 			}
-		} while ($numErrors < 3 && !$response->isOk());
+		} while ($numErrors < 3 && (!isset($response) || !$response->isOk()));
  
-		if (!$response->isOK()) {
+		if (isset($response)) {
+			if (!$response->isOK()) {
+				throw new BackupException("Error uploading {$this->_tarball} to S3. Exception Message: '$errMsg' Response from Amazon was: ".print_r($response, true));
+			}
+		} else {
 			throw new BackupException("Error uploading {$this->_tarball} to S3. Exception Message: '$errMsg' Response from Amazon was: ".print_r($response, true));
 		}
+
 	}
 	
 	protected function _createTarball($siteName) {
