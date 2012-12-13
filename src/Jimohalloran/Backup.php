@@ -58,6 +58,7 @@ class Backup {
 	
 		$numErrors = 0;
 		$errMsg = '';
+		$success = false;
 		do {
 			try {
 				$response = $s3->create_mpu_object($awsConfig['bucket'], basename($this->_tarball), array(
@@ -67,6 +68,20 @@ class Backup {
 						'partSize' => 1 * 1024 * 1024 * 1024,  // 1Gb
 						'limit' => 1,
 					));
+				
+				if ($response instanceof \CFResponse) {
+					$success = $response->isOk();
+				} elseif ($response instanceof \CFArray) {
+					$success = $response->allOk();
+				} else {
+					$success = false;
+					$errMsg = 'Unknown response type';
+				}
+				
+				if (!$success) {
+					throw new BackupException("Error uploading {$this->_tarball} to S3. Exception Message: '$errMsg' Response from Amazon was: ".print_r($response, true));
+				}
+				
 			} catch (\cURL_Exception $e) {
 				$numErrors++;
 				$errMsg = $e->getMessage();
@@ -76,16 +91,13 @@ class Backup {
 				$errMsg = $e->getMessage();
 				echo "$numErrors: $errMsg\n";
 			}
-		} while ($numErrors < 3 && !$response->isOk());
- 
-		if (!$response->isOK()) {
-			throw new BackupException("Error uploading {$this->_tarball} to S3. Exception Message: '$errMsg' Response from Amazon was: ".print_r($response, true));
-		}
+		} while ($numErrors < 3 && !$success);
+
 	}
 	
 	protected function _createTarball($siteName) {
 		$this->_tarball = sys_get_temp_dir().'/'.$siteName.'-'.date('YmdHi').'.tar.gz';
-		$cmd = 'tar zcf '. $this->_tarball . ' ' .$this->_tmpPath.'/';
+		$cmd = 'nice tar zcf '. $this->_tarball . ' ' .$this->_tmpPath.'/';
 		$process = new Process($cmd);
 		$process->setTimeout(3600);
 		$process->run();
@@ -99,7 +111,7 @@ class Backup {
 		if (substr($conf['path'], -1) != '/') {
 			$conf['path'] .= '/';
 		}
-		$cmd = 'cp -a '.$conf['path'].'* '.$destDir;
+		$cmd = 'nice cp -a '.$conf['path'].'* '.$destDir;
 		
 		mkdir($destDir, 0700);
 				
@@ -112,7 +124,7 @@ class Backup {
 	}
 	
 	protected function _mysqlDump($conn) {
-		$cmd = 'mysqldump';
+		$cmd = 'nice mysqldump';
 		$cmd .= ' -h '.$this->_elem($conn, 'hostname', 'localhost');
 		$cmd .= ' -u '.$this->_elem($conn, 'username', 'root');
 		$cmd .= array_key_exists('password', $conn) ? ' -p' .$conn['password'] : '';

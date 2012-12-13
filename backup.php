@@ -30,5 +30,6 @@ try {
 	$backup->execute();
 } catch (\Jimohalloran\BackupException $e) {
 	echo "Error performing backup: ".$e->getMessage()."\n";
+	unset($backup);
 	exit(1);
 }
