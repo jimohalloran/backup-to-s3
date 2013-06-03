@@ -135,14 +135,23 @@ class Backup {
 		if (array_key_exists('touch', $conn)) {
 			touch($conn['touch']);
 		}
-		
-		$process = new Process($cmd);
-		$process->setTimeout(3600);
-		$process->run();
-		
-		if (array_key_exists('touch', $conn) && file_exists($conn['touch'])) {
-			unlink($conn['touch']);
-		}
+
+        try {
+            $process = new Process($cmd);
+            $process->setTimeout(3600);
+            $process->run();
+
+            if (array_key_exists('touch', $conn) && file_exists($conn['touch'])) {
+                unlink($conn['touch']);
+            }
+        } catch (\Exception $e) {
+            // Catch any exception that might occur during command execution and
+            // ensure the flag file is deleed before we re-throw the exception.
+            if (array_key_exists('touch', $conn) && file_exists($conn['touch'])) {
+                unlink($conn['touch']);
+            }
+            throw $e;
+        }
 
 		if (!$process->isSuccessful()) {
 			throw new BackupException($process->getErrorOutput());
