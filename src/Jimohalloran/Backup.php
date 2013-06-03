@@ -121,6 +121,23 @@ class Backup {
 		if (!$process->isSuccessful()) {
 				throw new BackupException("Error copying {$conf['name']}: ".$process->getErrorOutput());
 		}
+
+        if (array_key_exists('exclude', $conf)) {
+            if (!is_array($conf['exclude'])) {
+                $conf['exclude'] = array($conf['exclude']);
+            }
+
+            foreach ($conf['exclude'] as $excludePath) {
+                $fullExcludePath = $destDir.$excludePath;
+                if (file_exists($fullExcludePath)) {
+                    if (is_dir($fullExcludePath)) {
+                        $this->_rrmdir($fullExcludePath);
+                    } else {
+                        unlink($fullExcludePath);
+                    }
+                }
+            }
+        }
 	}
 	
 	protected function _mysqlDump($conn) {
