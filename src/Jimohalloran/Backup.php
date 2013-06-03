@@ -111,7 +111,7 @@ class Backup {
 		if (substr($conf['path'], -1) != '/') {
 			$conf['path'] .= '/';
 		}
-		$cmd = 'nice cp -a '.$conf['path'].'* '.$destDir;
+		$cmd = 'nice cp -a --reflink=auto '.$conf['path'].'* '.$destDir;
 		
 		mkdir($destDir, 0700);
 				
