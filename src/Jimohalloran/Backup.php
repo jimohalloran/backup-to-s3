@@ -124,7 +124,7 @@ class Backup {
 	}
 	
 	protected function _mysqlDump($conn) {
-		$cmd = 'nice mysqldump';
+		$cmd = 'nice mysqldump --routines';
 		$cmd .= ' -h '.$this->_elem($conn, 'hostname', 'localhost');
 		$cmd .= ' -u '.$this->_elem($conn, 'username', 'root');
 		$cmd .= array_key_exists('password', $conn) ? ' -p' .$conn['password'] : '';
