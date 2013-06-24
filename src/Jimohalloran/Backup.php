@@ -111,7 +111,7 @@ class Backup {
 		if (substr($conf['path'], -1) != '/') {
 			$conf['path'] .= '/';
 		}
-		$cmd = 'nice cp -a '.$conf['path'].'* '.$destDir;
+		$cmd = 'nice cp -a -l '.$conf['path'].'* '.$destDir;
 		
 		mkdir($destDir, 0700);
 				
@@ -121,10 +121,27 @@ class Backup {
 		if (!$process->isSuccessful()) {
 				throw new BackupException("Error copying {$conf['name']}: ".$process->getErrorOutput());
 		}
+
+        if (array_key_exists('exclude', $conf)) {
+            if (!is_array($conf['exclude'])) {
+                $conf['exclude'] = array($conf['exclude']);
+            }
+
+            foreach ($conf['exclude'] as $excludePath) {
+                $fullExcludePath = $destDir.$excludePath;
+                if (file_exists($fullExcludePath)) {
+                    if (is_dir($fullExcludePath)) {
+                        $this->_rrmdir($fullExcludePath);
+                    } else {
+                        unlink($fullExcludePath);
+                    }
+                }
+            }
+        }
 	}
 	
 	protected function _mysqlDump($conn) {
-		$cmd = 'nice mysqldump';
+		$cmd = 'nice mysqldump --routines';
 		$cmd .= ' -h '.$this->_elem($conn, 'hostname', 'localhost');
 		$cmd .= ' -u '.$this->_elem($conn, 'username', 'root');
 		$cmd .= array_key_exists('password', $conn) ? ' -p' .$conn['password'] : '';
@@ -135,14 +152,23 @@ class Backup {
 		if (array_key_exists('touch', $conn)) {
 			touch($conn['touch']);
 		}
-		
-		$process = new Process($cmd);
-		$process->setTimeout(3600);
-		$process->run();
-		
-		if (array_key_exists('touch', $conn) && file_exists($conn['touch'])) {
-			unlink($conn['touch']);
-		}
+
+        try {
+            $process = new Process($cmd);
+            $process->setTimeout(3600);
+            $process->run();
+
+            if (array_key_exists('touch', $conn) && file_exists($conn['touch'])) {
+                unlink($conn['touch']);
+            }
+        } catch (\Exception $e) {
+            // Catch any exception that might occur during command execution and
+            // ensure the flag file is deleed before we re-throw the exception.
+            if (array_key_exists('touch', $conn) && file_exists($conn['touch'])) {
+                unlink($conn['touch']);
+            }
+            throw $e;
+        }
 
 		if (!$process->isSuccessful()) {
 			throw new BackupException($process->getErrorOutput());

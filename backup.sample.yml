@@ -5,13 +5,16 @@ amazon:
   access_key_id: access_key_here
 database:  # Backup a database with mysqldump
   -        # Repeat this block if you need to back up multiple databases.
-    name: main   # Used to identify the database when creating filenames,
+    name: main   # Used to identify the database when creating file names.
     username: mysql_username
     password: 'mysql_password'
     hostname: localhost
     database: name_of_database
     touch: /wwwroot/myproj/maintenance.flag  # (optional) Create a file while the database backup is performed and delete it afterwards.  Can be used to put magento into maintenance mode.
-files: # Backup a foilder including all files and subfolders.
-  -    # Repeat this block if you want to back up multiple filder.
-    name: assets      # Used to identify this path when creating backjup folder,
+files: # Backup a folders including all files and subfolders.
+  -    # Repeat this block if you want to back up multiple folder.
+    name: assets      # Used to identify this path when creating backup folder,
     path: /wwwroot/myproj/media
+    exclude:  # Used to exclude a relative path (file or folder) from the backup can be a scalar or an array for multiple excludes
+      - thumbnails
+      - cache

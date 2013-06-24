@@ -1,10 +1,10 @@
 {
     "name": "jimohalloran/backup-to-s3",
-    "description": "PHP Script to back assets and a mysqldatabase to Amazon's S3",
+    "description": "PHP Script to back assets and a mysql database to Amazon's S3",
     "require": {
         "symfony/yaml": "2.0.*",
         "symfony/process": "2.0.*",
-        "ulrichsg/getopt-php": "dev-master",
+        "ulrichsg/getopt-php": "1.0.1",
         "amazonwebservices/aws-sdk-for-php": "1.5.*"
     },
     "autoload": {
