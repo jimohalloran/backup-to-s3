@@ -46,6 +46,11 @@ class Backup {
 		
 		if (count($this->_config['files']) || count($this->_config['database'])) {
 			$this->_createTarball($this->_config['name']);
+
+            if (array_key_exists('gpg', $this->_config) && array_key_exists('encryption_key', $this->_config['gpg']) && trim($this->_config['gpg']['encryption_key']) != '') {
+                $this->_encryptBackup($this->_config['gpg']['encryption_key']);
+            }
+
 			$this->_uploadToAmazonS3($this->_config['amazon']);
 		}
 	}
@@ -94,7 +99,28 @@ class Backup {
 		} while ($numErrors < 3 && !$success);
 
 	}
-	
+
+    protected function _encryptBackup($gpgKeyId) {
+        $cmd = 'nice gpg -r '.escapeshellarg($gpgKeyId).' -o '.$this->_tarball.'.gpg -e '.$this->_tarball;
+        $process = new Process($cmd);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // If encryption succeeds, securely delete the original file.
+        if ($process->isSuccessful()) {
+            $cmd = 'shred --remove '.$this->_tarball;
+
+            $process = new Process($cmd);
+            $process->setTimeout(3600);
+            $process->run();
+
+            $this->_tarball .= '.gpg';
+        } else {
+            throw new BackupException("Error encrypting {$this->_tarball}: ".$process->getErrorOutput());
+        }
+
+    }
+
 	protected function _createTarball($siteName) {
 		$this->_tarball = sys_get_temp_dir().'/'.$siteName.'-'.date('YmdHi').'.tar.gz';
 		$cmd = 'nice tar zcf '. $this->_tarball . ' ' .$this->_tmpPath.'/';
