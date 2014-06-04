@@ -56,3 +56,30 @@ To restore from a backup, you'll first need to download from Amazon S3 the backu
 	  $ tar zxvf my-backup.tgz
 
 This will create a directory containing the assets, and database dump as originally backed up..
+
+Encrypted Backups
+-----------------
+
+You can GPG encrypt backups before being exporting to Amazon S3 by adding the following to your backup.yml
+
+    gpg:
+      encryption_key: "ABCD1234"  # Supply key id here.
+
+The backup script will then encrypt the backup using the supplied GPG public key.  Ensure you have a copy of the corresponding Secret Key and Passphrase stored in a safe place.  If you loose the secret key your backups will be irrecoverable.
+
+    Make sure the public key is trusted so that GPG runs without prompting with the following message:
+
+    It is NOT certain that the key belongs to the person named
+    in the user ID.  If you *really* know what you are doing,
+    you may answer the next question with yes.
+
+    Use this key anyway? (y/N)
+
+If you see this, either sign the key or mark it as "ultimate" trust.  To do the latter run ```gpg --edit-key <key id> trust```, select option 5 "I trust ultimately" and then type ```quit``` to exit.
+
+Encrypted Restores
+------------------
+
+To restore a backup that was encrypted, you must have a copy of the secret key from the keypair used to make the backup.  If the secret key is not available, the backup will be irrecoverable.   To check if you have a copy of the required secret key on your GPG keyring, the command ```gpg --list-secret-keys``` can be used.  This will display a list of the secret keys available on your keyring.  If you don't have the required key on your keyring, obtain the key and place it in a file on your filesystem.  Then run ```gpg --import <filename>``` to import it.  After importing, use the "shred" command to securely delete the temporary file.
+
+To actually restore the backup, fetch the .gpg file from Amazon S3, and run the command ```gpg -d <filename>```.  You'll be prompted to enter the passphrase for the secret key, then the file will be decrypted.  Once decrypted, you can follow the normal restoration instructions above.
