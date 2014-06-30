@@ -102,7 +102,7 @@ class Backup {
 
     protected function _encryptBackup($gpgKeyId) {
         $cmd = 'nice gpg ';
-        $cmd .= ' --keyring '.$this->_elem($this->_config['gpg'], 'keyring', '~/.gnupg/');
+        $cmd .= ' --homedir '.$this->_elem($this->_config['gpg'], 'homedir', '~/.gnupg/');
         $cmd .= ' -r '.escapeshellarg($gpgKeyId).' -o '.$this->_tarball.'.gpg -e '.$this->_tarball;
         $process = new Process($cmd);
         $process->setTimeout(3600);
