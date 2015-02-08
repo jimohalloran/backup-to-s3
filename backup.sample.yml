@@ -3,6 +3,8 @@ amazon:
   bucket: my_bucket_name   # Must be created manually
   secret_access_key: 'secret key here'
   access_key_id: access_key_here
+gpg:
+  encryption_key: "ABCD1234"  # (optional) Encrypt tarball with this gog key before upload.  Supply key id here.
 database:  # Backup a database with mysqldump
   -        # Repeat this block if you need to back up multiple databases.
     name: main   # Used to identify the database when creating file names.

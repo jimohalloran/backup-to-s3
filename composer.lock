@@ -1,7 +1,8 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
     "hash": "74c387c44555d3c76a9e484050d13ea4",
     "packages": [
@@ -57,17 +58,17 @@
         },
         {
             "name": "symfony/process",
-            "version": "v2.0.23",
+            "version": "v2.0.25",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "v2.0.23"
+                "reference": "7d92786475f2b7d4a4f4be4f0076732ace155df2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/v2.0.23",
-                "reference": "v2.0.23",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/7d92786475f2b7d4a4f4be4f0076732ace155df2",
+                "reference": "7d92786475f2b7d4a4f4be4f0076732ace155df2",
                 "shasum": ""
             },
             "require": {
@@ -86,7 +87,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -99,17 +102,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.0.23",
+            "version": "v2.0.25",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "v2.0.23"
+                "reference": "c508a879829976e30f05e16b96a7ed024ee82ce1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/v2.0.23",
-                "reference": "v2.0.23",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/c508a879829976e30f05e16b96a7ed024ee82ce1",
+                "reference": "c508a879829976e30f05e16b96a7ed024ee82ce1",
                 "shasum": ""
             },
             "require": {
@@ -128,7 +131,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
