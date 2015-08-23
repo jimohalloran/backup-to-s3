@@ -139,7 +139,14 @@ class Backup {
 		if (substr($conf['path'], -1) != '/') {
 			$conf['path'] .= '/';
 		}
-		$cmd = 'nice cp -a -l '.$conf['path'].'* '.$destDir;
+
+		// If there's no config valuse, assume hardlinks.  Otherwise go as configured.
+		$hardlinks = true;
+		if (array_key_exists('hardlink', $conf)) {
+			$hardlinks = (bool) $conf['hardlink'];
+		}
+
+		$cmd = 'nice cp -a '.($hardlinks ? '-l ' : '').$conf['path'].'* '.$destDir;
 		
 		mkdir($destDir, 0700);
 				
